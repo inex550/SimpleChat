@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="CornerSize20">
+        <item name="cornerSize">20%</item>
+    </style>
+
+    <style name="EditText">
+        <item name="android:textColorHint">@color/white_transparent_40</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="EditText.OutlinedEditText" parent="EditText">
+        <item name="android:background">@drawable/bg_white_transparent_20_outlined_16</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
+    <style name="TextView">
+    </style>
+
+    <style name="TextView.White" parent="TextView">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TextView.White.24" parent="TextView.White">
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="TextView.White.16" parent="TextView.White">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextView.White.12" parent="TextView.White">
+        <item name="android:textSize">12sp</item>
+    </style>
+    
+</resources>

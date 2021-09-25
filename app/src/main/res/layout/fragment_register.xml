@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/dark_purple">
+
+    <TextView
+        android:id="@+id/textView"
+        style="@style/TextView.White.24"
+        android:layout_width="240dp"
+        android:gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:text="@string/auth_register_create_new_account_text"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/username_et"
+            style="@style/EditText.OutlinedEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/ic_person"
+            android:hint="@string/auth_username" />
+
+        <EditText
+            android:id="@+id/password_et"
+            style="@style/EditText.OutlinedEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:drawableEnd="@drawable/ic_password"
+            android:hint="@string/auth_password"
+            android:inputType="textPassword" />
+
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/register_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:textStyle="bold"
+        android:text="@string/auth_register"
+        android:textColor="@color/dark_purple"
+        android:paddingVertical="16dp"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/to_login_tv"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        tools:layout_editor_absoluteX="16dp" />
+
+    <TextView
+        android:id="@+id/to_login_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:textColor="@color/color_primary"
+        android:text="@string/auth_sign_in"
+        style="@style/TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

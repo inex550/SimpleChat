@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/container_cl"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    android:background="@drawable/bg_ripple_white_transparent_20_outlined_16">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/chat_icon_iv"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@color/dark_purple"
+        app:shapeAppearanceOverlay="@style/CornerSize20"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/chat_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/TextView.White.16"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/chat_icon_iv"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Alex123"
+        android:layout_marginStart="16dp"/>
+
+    <ImageView
+        android:id="@+id/chat_type_icon_iv"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/remove_chat_btn"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/white_transparent_20"
+        android:layout_marginEnd="8dp"
+        tools:src="@drawable/ic_person" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/remove_chat_btn"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/black_gray"
+        android:padding="8dp"
+        app:icon="@drawable/ic_trash"
+        app:iconGravity="end"
+        app:iconTint="@android:color/holo_red_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

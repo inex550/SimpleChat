@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">SimpleChat</string>
+
+    <string name="pref_filename">PREF_SIMPLECHAT_OPTIONS</string>
+
+    <string name="message_label">Сообщение</string>
+    <string name="repeat">Повторить</string>
+    <string name="ok">Ок</string>
+    <string name="cancel">Отмена</string>
+
+    <string name="error_dialog_title">Внимание</string>
+    <string name="error_field_empty">Не все поля заполнены</string>
+    <string name="error_unknown">Неизвестная ошибка</string>
+    <string name="error_something_broke">Упс. У нас что-то сломалось</string>
+    <string name="error_connection_closed">Соединение прервано. Возможная причина - отсутствие интернет соединения</string>
+    <string name="error_connecting_error">Ошибка при попытке установить соединение</string>
+    <string name="error_timeout">Время ожидания истекло</string>
+
+    <string name="auth_password">Пароль</string>
+    <string name="auth_username">Имя пользователя</string>
+    <string name="auth_to_create_new_account_screen"><u>Создайте новый аккаунт</u></string>
+    <string name="auth_sign_in">Войти</string>
+    <string name="auth_register">Создать</string>
+    <string name="auth_login_hello_text">Добро пожаловать!</string>
+    <string name="auth_login_sign_to_continue_text">Войдите чтобы продолжить</string>
+    <string name="auth_register_create_new_account_text">Создайте новый Аккаунт</string>
+
+    <string name="chats_no_name">Без названия</string>
+    <string name="chats_chats_list_title">Список чатов</string>
+</resources>
