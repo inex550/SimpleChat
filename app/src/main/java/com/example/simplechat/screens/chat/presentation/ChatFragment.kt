@@ -1,11 +1,9 @@
 package com.example.simplechat.screens.chat.presentation
 
 import android.widget.Toast
-import androidx.core.view.size
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.simplechat.AppActivity
 import com.example.simplechat.R
 import com.example.simplechat.core.coreui.base.BaseFragment
 import com.example.simplechat.core.coreui.dialog.ErrorDialog
@@ -29,7 +27,11 @@ class ChatFragment: BaseFragment(R.layout.fragment_chat) {
 
     private val viewModel: ChatViewModel by viewModels()
 
-    private val messagesAdapter = MessagesAdapter()
+    private val messagesAdapter = MessagesAdapter(
+        onLoaderEnabled = { message ->
+            viewModel.loadOldMessagesAt(chat!!, message.id-1)
+        }
+    )
 
     override fun prepareUi() {
 
@@ -39,12 +41,15 @@ class ChatFragment: BaseFragment(R.layout.fragment_chat) {
             return
         }
 
+        (activity as? AppActivity)?.hideBottomNavigation()
+
         _binding = FragmentChatBinding.bind(requireView())
 
-        viewModel.getMessages(chat!!)
+        viewModel.loadFirstBatch(chat!!)
 
         messagesAdapter.setCurrentUserId(viewModel.userPreferenceStorage.id?.toInt() ?: -1)
         binding.messagesRv.adapter = messagesAdapter
+        messagesAdapter.addRecyclerScrollListener(binding.messagesRv)
 
         binding.chatNameTv.text = chat?.name
 
@@ -58,7 +63,7 @@ class ChatFragment: BaseFragment(R.layout.fragment_chat) {
         }
 
         binding.repeatBtn.setOnClickListener {
-            viewModel.getMessages(chat!!)
+            viewModel.loadFirstBatch(chat!!)
         }
 
         binding.backIv.setOnClickListener {
@@ -81,11 +86,23 @@ class ChatFragment: BaseFragment(R.layout.fragment_chat) {
             binding.sendBtn.isEnabled = loading
         }.launchWhenStarted(lifecycleScope)
 
-        viewModel.messages.onEach { messages ->
+        viewModel.atStartMessages.onEach { messages ->
+            messagesAdapter.addMessagesAtStart(messages)
+        }.launchWhenStarted(lifecycleScope)
+
+        viewModel.atEndMessages.onEach { messages ->
+            messagesAdapter.addMessages(messages)
+            binding.messagesRv.scrollToPosition(messagesAdapter.itemCount - 1)
+        }.launchWhenStarted(lifecycleScope)
+
+        viewModel.firstBatchMessages.onEach { messages ->
             binding.chatContentCl.makeVisible(true)
             messagesAdapter.addMessages(messages)
-
             binding.messagesRv.scrollToPosition(messagesAdapter.itemCount - 1)
+        }.launchWhenStarted(lifecycleScope)
+
+        viewModel.removeAdapterLoader.onEach {
+            messagesAdapter.removeLoader()
         }.launchWhenStarted(lifecycleScope)
 
         viewModel.screenError.onEach { error ->

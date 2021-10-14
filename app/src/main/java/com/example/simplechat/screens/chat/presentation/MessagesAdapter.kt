@@ -3,13 +3,23 @@ package com.example.simplechat.screens.chat.presentation
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.example.simplechat.R
+import com.example.simplechat.core.coreimpl.network.di.NetworkModule
 import com.example.simplechat.screens.chat.domain.models.Message
 
-class MessagesAdapter: RecyclerView.Adapter<MessagesAdapter.ViewHolder>() {
+typealias OnLoaderEnabled = (first: Message) -> Unit
+
+class MessagesAdapter(
+    private val onLoaderEnabled: OnLoaderEnabled
+): RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
+
+    var isLoaderEnabled: Boolean = false
+        private set
 
     private var currentUserId: Int? = null
 
@@ -17,49 +27,106 @@ class MessagesAdapter: RecyclerView.Adapter<MessagesAdapter.ViewHolder>() {
         currentUserId = userId
     }
 
-    private val messages: ArrayList<Message> = arrayListOf()
+    private val messages: ArrayList<Message?> = arrayListOf()
 
     fun addMessages(items: List<Message>) {
-        val insertStartIndex = messages.size
+        val startIndex = messages.size
 
         messages.addAll(items)
-        notifyItemRangeInserted(insertStartIndex, items.size)
+        notifyItemRangeInserted(startIndex, items.size)
     }
 
-    fun addMessage(message: Message) {
-        messages.add(message)
-        notifyItemInserted(messages.lastIndex)
+    fun addMessagesAtStart(items: List<Message>) {
+        val startIndex = if (isLoaderEnabled) 1 else 0
+
+        messages.addAll(startIndex, items)
+        notifyItemRangeInserted(startIndex, items.size)
     }
 
-    override fun getItemViewType(position: Int): Int = when(messages[position].senderId) {
-        currentUserId -> MY_MESSAGE_VIEW_TYPE
-        else -> USER_MESSAGE_VIEW_TYPE
-    }
+    override fun getItemViewType(position: Int): Int =
+        if (isLoaderEnabled && position == 0)
+            LOADER_VIEW_TYPE
+        else if (messages[position]?.senderId == currentUserId)
+            MY_MESSAGE_VIEW_TYPE
+        else
+            USER_MESSAGE_VIEW_TYPE
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-        ViewHolder(LayoutInflater.from(parent.context).inflate(when (viewType) {
-            MY_MESSAGE_VIEW_TYPE -> R.layout.item_my_message
-            USER_MESSAGE_VIEW_TYPE -> R.layout.item_user_message
-            else -> throw NoSuchElementException("No such itemViewType for \"$viewType\"")
-        }, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder =
+        if (viewType == LOADER_VIEW_TYPE)
+            LoaderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_loading, parent, false))
+        else
+            ViewHolder(LayoutInflater.from(parent.context).inflate(when (viewType) {
+                MY_MESSAGE_VIEW_TYPE -> R.layout.item_my_message
+                USER_MESSAGE_VIEW_TYPE -> R.layout.item_user_message
+                else -> throw NoSuchElementException("No such itemViewType for \"$viewType\"")
+            }, parent, false))
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(messages[position])
+    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
+        if (isLoaderEnabled && position == 0) return
+
+        val message = messages[position - if (isLoaderEnabled) 1 else 0] ?: let { return }
+        holder.bind(message)
     }
 
     override fun getItemCount(): Int = messages.size
 
-    class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    open class BaseViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+        open fun bind(message: Message) {}
+    }
+
+    fun addRecyclerScrollListener(recyclerView: RecyclerView) {
+        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+
+        recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val position = layoutManager.findFirstVisibleItemPosition()
+                if (!isLoaderEnabled && dy < 0 && position == 0)
+                    addLoader()
+            }
+        })
+    }
+
+    fun addLoader() {
+        if (isLoaderEnabled) return
+
+        messages.add(0, null)
+        isLoaderEnabled = true
+        notifyItemInserted(0)
+
+        onLoaderEnabled(messages[1]!!)
+    }
+
+    fun removeLoader() {
+        if (!isLoaderEnabled) return
+
+        messages.removeAt(0)
+        isLoaderEnabled = false
+        notifyItemRemoved(0)
+    }
+
+    class LoaderViewHolder(itemView: View): BaseViewHolder(itemView)
+
+    class ViewHolder(itemView: View): BaseViewHolder(itemView) {
 
         private val messageTextTv: TextView = itemView.findViewById(R.id.message_text_tv)
+        private val avatarIv: ImageView = itemView.findViewById(R.id.avatar_siv)
 
-        fun bind(message: Message) {
+        override fun bind(message: Message) {
             messageTextTv.text = message.text
+
+            if (message.sender.avatar == null)
+                avatarIv.setImageResource(R.drawable.ic_not_avatar)
+            else
+                avatarIv.load(NetworkModule.BASE_IMAGE_URL + message.sender.avatar)
         }
     }
 
     companion object {
         private const val MY_MESSAGE_VIEW_TYPE = 1
         private const val USER_MESSAGE_VIEW_TYPE = 2
+        private const val LOADER_VIEW_TYPE = 3
     }
 }

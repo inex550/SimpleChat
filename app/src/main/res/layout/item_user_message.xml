@@ -14,11 +14,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_white_transparent_20_outlined_12"
-        android:padding="8dp"
         android:maxWidth="300dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:padding="8dp"
+        android:layout_marginStart="12dp"
+        app:layout_constraintStart_toEndOf="@+id/avatar_siv"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Привет, друг! :D" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/avatar_siv"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/CornerSize40"
+        app:strokeColor="@color/white_transparent_20"
+        app:strokeWidth="2dp"
+        android:padding="2dp"
+        android:src="@drawable/ic_not_avatar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

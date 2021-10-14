@@ -24,6 +24,9 @@ class AuthViewModel @Inject constructor(
     private val errorHandler: UiErrorHandler,
 ): ViewModel() {
 
+    private val _success = MutableStateFlow<Boolean?>(null)
+    val success = _success.filterNotNull()
+
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
@@ -39,11 +42,9 @@ class AuthViewModel @Inject constructor(
 
             try {
                 val userIdentifiers = repository.login(username, password)
-                userPreferenceStorage.id = userIdentifiers.id
-                userPreferenceStorage.username = userIdentifiers.username
-                userPreferenceStorage.token = userIdentifiers.token
+                userPreferenceStorage.setupWithUserIdentifiersModel(userIdentifiers)
 
-                router.newRootChain(Screens.chatsScreen())
+                _success.value = true
             } catch (e: Exception) {
                 e.printStackTrace()
                 errorHandler.proceedError(e) { error ->
@@ -61,11 +62,9 @@ class AuthViewModel @Inject constructor(
 
             try {
                 val userIdentifiers = repository.register(username, password)
-                userPreferenceStorage.id = userIdentifiers.id
-                userPreferenceStorage.username = userIdentifiers.username
-                userPreferenceStorage.token = userIdentifiers.token
+                userPreferenceStorage.setupWithUserIdentifiersModel(userIdentifiers)
 
-                router.newRootChain(Screens.chatsScreen())
+                _success.value = true
             } catch (e: Exception) {
                 errorHandler.proceedError(e) { error ->
                     _authError.value = error

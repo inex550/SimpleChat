@@ -8,6 +8,9 @@
     <string name="ok">Ок</string>
     <string name="cancel">Отмена</string>
 
+    <string name="updates_service_channel_name">Updates Channel</string>
+    <string name="updates_service_channel_description">Канал для уведомлений о новых чатах/сообщениях</string>
+
     <string name="error_dialog_title">Внимание</string>
     <string name="error_field_empty">Не все поля заполнены</string>
     <string name="error_unknown">Неизвестная ошибка</string>
@@ -27,4 +30,8 @@
 
     <string name="chats_no_name">Без названия</string>
     <string name="chats_chats_list_title">Список чатов</string>
+    <string name="menu_chats">Чаты</string>
+    <string name="menu_profile">Профиль</string>
+    <string name="profile_username">Username</string>
+    <string name="profile_save">Сохранить</string>
 </resources>

@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class Chat(
     val id: Int,
     val name: String,
+    val avatar: String? = null,
 
     val user: User? = null,
     val users: List<User>? = null

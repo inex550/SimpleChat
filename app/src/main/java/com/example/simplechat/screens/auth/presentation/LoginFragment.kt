@@ -1,8 +1,8 @@
 package com.example.simplechat.screens.auth.presentation
 
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.example.simplechat.AppActivity
 import com.example.simplechat.R
 import com.example.simplechat.core.coreui.base.BaseFragment
 import com.example.simplechat.core.coreui.dialog.ErrorDialog
@@ -21,6 +21,8 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
     private val viewModel: AuthViewModel by viewModels()
 
     override fun prepareUi() {
+        (activity as? AppActivity)?.hideBottomNavigation()
+
         _binding = FragmentLoginBinding.bind(requireView())
 
         binding.signInBtn.setOnClickListener {
@@ -43,6 +45,10 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
     }
 
     override fun setupViewModel() {
+        viewModel.success.onEach {
+            (activity as? AppActivity)?.checkFirstBnvItem()
+        }.launchWhenStarted(lifecycleScope)
+
         viewModel.loading.onEach { loading ->
             binding.signInBtn.isEnabled = !loading
         }.launchWhenStarted(lifecycleScope)

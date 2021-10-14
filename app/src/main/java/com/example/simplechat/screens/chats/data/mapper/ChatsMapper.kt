@@ -22,7 +22,8 @@ class ChatsMapper @Inject constructor(
             Chat(
                 id = chat.id,
                 name = chat.name ?: user?.username ?: context.getString(R.string.chats_no_name),
-                user = user
+                user = user,
+                avatar = user?.avatar
             )
         }
         else

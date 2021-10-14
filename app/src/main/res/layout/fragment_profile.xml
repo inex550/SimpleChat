@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_purple">
+
+    <include android:id="@+id/top_panel" layout="@layout/layout_exit_top_panel"/>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/avatar_siv"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_panel"
+        app:strokeColor="@color/color_primary"
+        android:layout_marginTop="32dp"
+        app:strokeWidth="4dp"
+        android:padding="4dp"
+        app:shapeAppearance="@style/CornerSize40"
+        android:src="@drawable/ic_not_avatar"/>
+
+    <EditText
+        android:id="@+id/username_et"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:hint="@string/profile_username"
+        style="@style/EditText.OutlinedEditText"
+        android:textSize="20sp"
+        android:autofillHints="username"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/avatar_siv"
+        android:layout_marginTop="24dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/save_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/profile_save"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:paddingVertical="16dp"
+        android:paddingHorizontal="20dp"
+        android:layout_margin="16dp"
+        app:cornerRadius="8dp"
+        android:enabled="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

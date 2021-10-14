@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.example.simplechat.R
+import com.example.simplechat.core.coreimpl.network.di.NetworkModule
 import com.example.simplechat.databinding.ItemChatBinding
 import com.example.simplechat.screens.chats.domain.models.Chat
 
@@ -75,11 +77,21 @@ class ChatsAdapter(
 
             binding.chatTypeIconIv.setImageResource(
                 when {
-                    chat.user != null -> R.drawable.ic_person
+                    chat.user != null -> {
+                        binding.chatIconIv.setImageResource(R.drawable.ic_not_avatar)
+                        R.drawable.ic_person
+                    }
                     chat.users != null -> R.drawable.ic_group
                     else -> 0
                 }
             )
+
+            chat.avatar?.let {
+                binding.chatIconIv.load(NetworkModule.BASE_IMAGE_URL + chat.avatar)
+            }
+
+            if (chat.avatar != null)
+                binding.chatIconIv.load(NetworkModule.BASE_IMAGE_URL + chat.avatar)
 
             binding.removeChatBtn.setOnClickListener {
                 onDeleteChatClickListener(chat)

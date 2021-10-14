@@ -1,9 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    android:id="@+id/container"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AppActivity"/>
+    android:background="@color/dark_purple">
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".AppActivity"
+        android:layout_above="@id/border_view"/>
+
+    <View
+        android:id="@+id/border_view"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_above="@id/select_screens_bnv"
+        android:background="@color/white_transparent_20"
+        android:layout_marginHorizontal="16dp"/>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/select_screens_bnv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/dark_purple"
+        app:menu="@menu/screens_menu"
+        android:layout_alignParentBottom="true"
+        tools:visibility="visible"
+        android:visibility="gone"/>
+
+</RelativeLayout>

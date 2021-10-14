@@ -76,4 +76,7 @@ dependencies {
 
     // nv WeSocket Client
     implementation 'com.neovisionaries:nv-websocket-client:2.14'
+
+    // Coil
+    implementation "io.coil-kt:coil:1.4.0"
 }

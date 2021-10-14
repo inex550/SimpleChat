@@ -1,8 +1,9 @@
 package com.example.simplechat.screens.chats.presentation
 
-import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.example.simplechat.AppActivity
 import com.example.simplechat.R
 import com.example.simplechat.core.coreui.base.BaseFragment
 import com.example.simplechat.core.coreui.dialog.ErrorDialog
@@ -19,7 +20,7 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
     private var _binding: FragmentChatsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: ChatsViewModel by viewModels()
+    val viewModel: ChatsViewModel by viewModels()
 
     private val chatsAdapter = ChatsAdapter(
         onChatClickListener = { chat ->
@@ -32,13 +33,13 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
 
     override fun prepareUi() {
 
-        _binding = FragmentChatsBinding.bind(requireView())
+        (activity as? AppActivity)?.showBottomNavigation()
 
-        viewModel.loadChats()
+        _binding = FragmentChatsBinding.bind(requireView())
 
         binding.chatsRv.adapter = chatsAdapter
 
-        binding.titleUsernameTv.text = viewModel.userPreferenceStorage.username
+        binding.topPanel.titleUsernameTv.text = viewModel.userPreferenceStorage.username
 
         chatsAdapter.setChatsCountChangedListener { count ->
             binding.noChatsLl.makeVisible(count == 0)
@@ -53,9 +54,8 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
             viewModel.loadChats()
         }
 
-        binding.exitToLoginIv.setOnClickListener {
+        binding.topPanel.exitToLoginIv.setOnClickListener {
             viewModel.userPreferenceStorage.clearPrefs()
-
             viewModel.router.newRootChain(Screens.loginScreen())
         }
     }

@@ -40,4 +40,7 @@ interface ApiService {
 
     @DELETE("chat/{chatId}")
     suspend fun deleteChat(@Path("chatId") chatId: Int): ResponseBody
+
+    @POST("user/username/change")
+    suspend fun changeUsername(@Query("username") username: String): ResponseBody
 }

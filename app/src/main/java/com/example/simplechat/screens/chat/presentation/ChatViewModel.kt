@@ -12,6 +12,7 @@ import com.example.simplechat.screens.chat.domain.websocket.UpdatesWebSocket
 import com.example.simplechat.screens.chats.domain.models.Chat
 import com.github.terrakok.cicerone.Router
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -36,9 +37,21 @@ class ChatViewModel @Inject constructor(
     private val _sendEnabled = MutableStateFlow(false)
     val sendEnabled: StateFlow<Boolean> = _sendEnabled
 
-    private val _messages = MutableStateFlow<List<Message>?>(null)
-    val messages = _messages.filterNotNull().map {
-        _messages.value = null
+    private val _firstBatchMessages = MutableStateFlow<List<Message>?>(null)
+    val firstBatchMessages = _firstBatchMessages.filterNotNull().map {
+        _atEndMessages.value = null
+        it
+    }
+
+    private val _atStartMessages = MutableStateFlow<List<Message>?>(null)
+    val atStartMessages = _atStartMessages.filterNotNull().map {
+        _atStartMessages.value = null
+        it
+    }
+
+    private val _atEndMessages = MutableStateFlow<List<Message>?>(null)
+    val atEndMessages = _atEndMessages.filterNotNull().map {
+        _atEndMessages.value = null
         it
     }
 
@@ -54,6 +67,12 @@ class ChatViewModel @Inject constructor(
         it
     }
 
+    private val _removeAdapterLoader = MutableStateFlow<Boolean?>(null)
+    val removeAdapterLoader = _removeAdapterLoader.filterNotNull().map {
+        _removeAdapterLoader.value = null
+        it
+    }
+
     init {
         updatesWebSocket.setUpdatesConnectionListener(object : UpdatesWebSocket.UpdatesConnectionListener {
             override fun onOpen() {
@@ -61,7 +80,7 @@ class ChatViewModel @Inject constructor(
             }
 
             override fun onNewUpdates(updates: List<Update>) {
-                _messages.value = updates.mapNotNull { update -> update.message }
+                _atEndMessages.value = updates.mapNotNull { update -> update.message }
             }
 
             override fun onClosed(text: String) {
@@ -74,10 +93,10 @@ class ChatViewModel @Inject constructor(
         updatesWebSocket.start()
     }
 
-    fun getMessages(chat: Chat, start: Int? = null, batch: Int? = 20) {
+    fun loadFirstBatch(chat: Chat, batch: Int = 20) {
         viewModelScope.launch {
             try {
-                _messages.value = getChatMessagesUseCase.invoke(chat.id, start, batch)
+                _firstBatchMessages.value = getChatMessagesUseCase.invoke(chat.id, null, batch)
             } catch (e: Exception) {
                 e.printStackTrace()
                 uiErrorHandler.proceedError(e) { error ->
@@ -85,6 +104,22 @@ class ChatViewModel @Inject constructor(
                 }
             } finally {
                 _loading.value = false
+            }
+        }
+    }
+
+    fun loadOldMessagesAt(chat: Chat, start: Int? = null, batch: Int? = 20) {
+        viewModelScope.launch {
+            try {
+                delay(1000)
+                _atStartMessages.value = getChatMessagesUseCase.invoke(chat.id, start, batch)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                uiErrorHandler.proceedError(e) { error ->
+                    _screenError.value = error
+                }
+            } finally {
+                _removeAdapterLoader.value = true
             }
         }
     }

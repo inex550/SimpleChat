@@ -32,10 +32,7 @@ class ChatsViewModel @Inject constructor (
     val loading: StateFlow<Boolean> = _loading
 
     private val _chats = MutableStateFlow<List<Chat>?>(null)
-    val chats = _chats.filterNotNull().map {
-        _chats.value = null
-        it
-    }
+    val chats = _chats.filterNotNull()
 
     private val _newChat = MutableStateFlow<Chat?>(null)
     val newChat = _newChat.filterNotNull().map {
@@ -59,6 +56,10 @@ class ChatsViewModel @Inject constructor (
     val showError = _showError.filterNotNull().map {
         _showError.value = null
         it
+    }
+
+    init {
+        loadChats()
     }
 
     fun loadChats() {

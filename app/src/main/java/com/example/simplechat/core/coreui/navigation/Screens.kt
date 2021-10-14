@@ -7,6 +7,7 @@ import com.example.simplechat.screens.auth.presentation.RegisterFragment
 import com.example.simplechat.screens.chat.presentation.ChatFragment
 import com.example.simplechat.screens.chats.domain.models.Chat
 import com.example.simplechat.screens.chats.presentation.ChatsFragment
+import com.example.simplechat.screens.profille.presentation.ProfileFragment
 import com.github.terrakok.cicerone.androidx.FragmentScreen
 
 object Screens {
@@ -18,4 +19,6 @@ object Screens {
     fun chatsScreen() = FragmentScreen { ChatsFragment() }
 
     fun chatScreen(chat: Chat) = FragmentScreen { ChatFragment.newInstance(chat) }
+
+    fun profileScreen() = FragmentScreen { ProfileFragment() }
 }
