@@ -8,6 +8,8 @@ import com.example.simplechat.screens.chat.domain.models.Update
 import com.example.simplechat.screens.chats.data.models.ChatNet
 import com.example.simplechat.screens.chats.data.models.NewPrivateChat
 import com.example.simplechat.screens.chats.domain.models.Chat
+import com.example.simplechat.screens.profille.domain.models.UploadedFile
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.http.*
 
@@ -43,4 +45,11 @@ interface ApiService {
 
     @POST("user/username/change")
     suspend fun changeUsername(@Query("username") username: String): ResponseBody
+
+    @POST("user/avatar/change")
+    suspend fun changeAvatar(@Query("avatar") avatar: String): ResponseBody
+
+    @Multipart
+    @POST("image/upload")
+    suspend fun uploadImage(@Part image: MultipartBody.Part): UploadedFile
 }

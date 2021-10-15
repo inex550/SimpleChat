@@ -3,29 +3,28 @@ package com.example.simplechat.core.coreui.dialog
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
-import com.example.simplechat.R
-import com.example.simplechat.core.coreui.util.makeVisible
-import com.example.simplechat.databinding.DialogErrorBinding
+import com.example.simplechat.databinding.DialogOkBinding
 
-class ErrorDialog(
-    private val message: String
+class OkDialog(
+    private val message: String,
+    private val title: String = "Внимание",
+    private val onDismissDialog: (() -> Unit)? = null
 ): DialogFragment() {
 
-    private var _binding: DialogErrorBinding? = null
+    private var _binding: DialogOkBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
-        _binding = DialogErrorBinding.inflate(layoutInflater)
+        _binding = DialogOkBinding.inflate(layoutInflater)
 
-        binding.error.errorContainer.makeVisible(true)
-
-        binding.error.errorTv.text = message
-
+        binding.titleTv.text = title
+        binding.messageTv.text = message
         binding.okBtn.setOnClickListener { dismiss() }
 
         return AlertDialog.Builder(requireContext())
@@ -36,8 +35,17 @@ class ErrorDialog(
     @SuppressLint("RestrictedApi")
     override fun setupDialog(dialog: Dialog, style: Int) {
         super.setupDialog(dialog, style)
-
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        onDismissDialog?.invoke()
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        onDismissDialog?.invoke()
     }
 
     override fun onDestroyView() {

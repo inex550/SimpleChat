@@ -18,6 +18,10 @@
     <string name="error_connection_closed">Соединение прервано. Возможная причина - отсутствие интернет соединения</string>
     <string name="error_connecting_error">Ошибка при попытке установить соединение</string>
     <string name="error_timeout">Время ожидания истекло</string>
+    <string name="error_could_not_upload_avatar">Т.к. вы не дали соответствующего разрешения, мы не можем загрузить ваш новый аватар</string>
+
+    <string name="warning_why_read_external_storage">Нам необходимо разрешение на чтение файлов, чтобы мы могли прочитать и загрузить на сервер выбранное вами изображение</string>
+    <string name="warning_could_not_read_image">Невозможно прочитать изображение</string>
 
     <string name="auth_password">Пароль</string>
     <string name="auth_username">Имя пользователя</string>

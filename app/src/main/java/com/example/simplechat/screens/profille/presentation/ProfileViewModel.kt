@@ -1,5 +1,6 @@
 package com.example.simplechat.screens.profille.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.simplechat.core.coreapi.common.preference.UserPreferenceStorage
@@ -11,6 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.net.URI
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,23 +33,29 @@ class ProfileViewModel @Inject constructor(
         it
     }
 
-    private val _usernameSuccessChanged = MutableStateFlow<String?>(null)
-    val usernameSuccessChanged = _usernameSuccessChanged.filterNotNull().map {
-        _usernameSuccessChanged.value = null
+    private val _success = MutableStateFlow<Boolean?>(null)
+    val success = _success.filterNotNull().map {
+        _success.value = null
         it
     }
 
-    fun changeProfileImage() {
-
-    }
-
-    fun changeProfileUsername(username: String) {
+    fun changeProfileData(username: String?, avatarFilepath: String?) {
         viewModelScope.launch {
             _loading.value = true
 
             try {
-                profileRepository.changeUsername(username)
-                _usernameSuccessChanged.value = username
+                if (avatarFilepath != null) {
+                    val filename = profileRepository.uploadImageByURI(avatarFilepath).name
+                    profileRepository.changeAvatar(filename)
+                    userPreferenceStorage.avatar = filename
+                }
+
+                if (username != null) {
+                    profileRepository.changeUsername(username)
+                    userPreferenceStorage.username = username
+                }
+
+                _success.value = true
             } catch (e: Exception) {
                 uiErrorHandler.proceedError(e) { error ->
                     _errorDialog.value = error

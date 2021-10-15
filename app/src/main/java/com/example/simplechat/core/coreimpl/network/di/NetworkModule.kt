@@ -83,7 +83,7 @@ class NetworkModule {
     companion object {
 
         //Local Address
-        const val BASE_ADDRESS  = "192.168.1.103"
+        const val BASE_ADDRESS  = "192.168.21.232"
 
         const val BASE_URL = "http://$BASE_ADDRESS/"
 
