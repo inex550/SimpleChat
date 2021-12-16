@@ -43,6 +43,11 @@ class MessagesAdapter(
         notifyItemRangeInserted(startIndex, items.size)
     }
 
+    fun addMessage(message: Message) {
+        messages.add(message)
+        notifyItemInserted(messages.lastIndex)
+    }
+
     override fun getItemViewType(position: Int): Int =
         if (isLoaderEnabled && position == 0)
             LOADER_VIEW_TYPE
@@ -112,10 +117,12 @@ class MessagesAdapter(
     class ViewHolder(itemView: View): BaseViewHolder(itemView) {
 
         private val messageTextTv: TextView = itemView.findViewById(R.id.message_text_tv)
+        private val usernameTv: TextView = itemView.findViewById(R.id.username_tv)
         private val avatarIv: ImageView = itemView.findViewById(R.id.avatar_siv)
 
         override fun bind(message: Message) {
             messageTextTv.text = message.text
+            usernameTv.text = message.sender.username
 
             if (message.sender.avatar == null)
                 avatarIv.setImageResource(R.drawable.ic_not_avatar)

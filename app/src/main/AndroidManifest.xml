@@ -16,7 +16,7 @@
         android:usesCleartextTraffic="true">
 
         <service
-            android:name=".services.updates.UpdatesService"
+            android:name=".services.updates.service.UpdatesService"
             android:enabled="true"
             android:exported="false"/>
 

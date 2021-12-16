@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatsViewModel @Inject constructor (
-    val router: Router,
+    val baseRouter: Router,
     val userPreferenceStorage: UserPreferenceStorage,
     private val getMyChatsUseCase: GetMyChatsUseCase,
     private val createPrivateChatUseCase: CreatePrivateChatUseCase,
@@ -31,18 +31,22 @@ class ChatsViewModel @Inject constructor (
     private val _loading = MutableStateFlow(true)
     val loading: StateFlow<Boolean> = _loading
 
-    private val _chats = MutableStateFlow<List<Chat>?>(null)
-    val chats = _chats.filterNotNull()
+    private val _chats = MutableStateFlow<ArrayList<Chat>?>(null)
+    val chats = _chats.filterNotNull().map {
+        _chats.value as List<Chat>
+    }
 
     private val _newChat = MutableStateFlow<Chat?>(null)
     val newChat = _newChat.filterNotNull().map {
         _newChat.value = null
+        _chats.value?.add(it)
         it
     }
 
     private val _removeChat = MutableStateFlow<Chat?>(null)
     val removeChat = _removeChat.filterNotNull().map {
         _removeChat.value = null
+        _chats.value?.remove(it)
         it
     }
 
@@ -69,7 +73,7 @@ class ChatsViewModel @Inject constructor (
             try {
                 val chats = getMyChatsUseCase.invoke()
 
-                _chats.value = chats
+                _chats.value = ArrayList(chats)
             } catch (e: Exception) {
                 uiErrorHandler.proceedError(e) { error ->
                     _chatsError.value = error

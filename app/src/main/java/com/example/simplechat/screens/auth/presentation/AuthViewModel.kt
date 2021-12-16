@@ -18,7 +18,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    val router: Router,
     val userPreferenceStorage: UserPreferenceStorage,
     private val repository: AuthRepository,
     private val errorHandler: UiErrorHandler,

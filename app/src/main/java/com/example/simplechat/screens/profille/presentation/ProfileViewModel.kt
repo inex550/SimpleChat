@@ -18,7 +18,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    val router: Router,
     val userPreferenceStorage: UserPreferenceStorage,
     private val uiErrorHandler: UiErrorHandler,
     private val profileRepository: ProfileRepository,

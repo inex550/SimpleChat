@@ -1,4 +1,4 @@
-package com.example.simplechat.screens.chat.domain.websocket
+package com.example.simplechat.services.updates.websocket
 
 import android.content.Context
 import com.example.simplechat.R
@@ -32,6 +32,8 @@ class UpdatesWebSocket @Inject constructor(
     }
 
     private var webSocket: WebSocket? = null
+
+    val isOpen: Boolean get() = webSocket?.isOpen == true
 
     override fun onTextMessage(websocket: WebSocket, text: String) {
         super.onTextMessage(websocket, text)
@@ -75,11 +77,12 @@ class UpdatesWebSocket @Inject constructor(
 
         webSocket?.addListener(this)
 
-        try {
-            webSocket?.connect()
-            webSocket?.sendText("asd")
-        } catch (e: WebSocketException) {
-            updatesConnectionListener?.onClosed(context.getString(R.string.error_connecting_error))
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                webSocket?.connect()
+            } catch (e: WebSocketException) {
+                updatesConnectionListener?.onClosed(context.getString(R.string.error_connecting_error))
+            }
         }
     }
 

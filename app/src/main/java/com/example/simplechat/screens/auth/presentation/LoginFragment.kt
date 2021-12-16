@@ -2,12 +2,11 @@ package com.example.simplechat.screens.auth.presentation
 
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.simplechat.AppActivity
 import com.example.simplechat.R
 import com.example.simplechat.core.coreui.base.BaseFragment
 import com.example.simplechat.core.coreui.dialog.ErrorDialog
 import com.example.simplechat.core.coreui.navigation.Screens
-import com.example.simplechat.core.coreui.util.launchWhenStarted
+import com.example.simplechat.core.coreui.extensions.launchWhenStarted
 import com.example.simplechat.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
@@ -21,8 +20,6 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
     private val viewModel: AuthViewModel by viewModels()
 
     override fun prepareUi() {
-        (activity as? AppActivity)?.hideBottomNavigation()
-
         _binding = FragmentLoginBinding.bind(requireView())
 
         binding.signInBtn.setOnClickListener {
@@ -40,13 +37,13 @@ class LoginFragment: BaseFragment(R.layout.fragment_login) {
         }
 
         binding.toRegisterTv.setOnClickListener {
-            viewModel.router.newRootChain(Screens.registerScreen())
+            getRouter().newRootChain(Screens.registerScreen())
         }
     }
 
     override fun setupViewModel() {
         viewModel.success.onEach {
-            (activity as? AppActivity)?.checkFirstBnvItem()
+            getRouter().newRootScreen(Screens.mainScreen())
         }.launchWhenStarted(lifecycleScope)
 
         viewModel.loading.onEach { loading ->

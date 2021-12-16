@@ -17,15 +17,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <include android:id="@+id/top_panel" layout="@layout/layout_exit_top_panel"/>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/chats_content_cl"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top_panel"
+        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible">
 
         <androidx.recyclerview.widget.RecyclerView
@@ -37,7 +35,7 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/item_chat" />
+            tools:listitem="@layout/item_chat"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_chat_btn"
@@ -48,7 +46,7 @@
             app:backgroundTint="@color/color_primary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:tint="@color/white" />
+            app:tint="@color/white"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

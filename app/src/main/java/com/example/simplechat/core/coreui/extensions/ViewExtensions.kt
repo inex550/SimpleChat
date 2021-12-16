@@ -1,4 +1,4 @@
-package com.example.simplechat.core.coreui.util
+package com.example.simplechat.core.coreui.extensions
 
 import android.view.View
 

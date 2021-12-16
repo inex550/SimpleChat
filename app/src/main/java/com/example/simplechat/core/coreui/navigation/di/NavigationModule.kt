@@ -1,5 +1,6 @@
 package com.example.simplechat.core.coreui.navigation.di
 
+import com.example.simplechat.core.coreui.navigation.subnavigation.CiceroneHolder
 import com.github.terrakok.cicerone.Cicerone
 import com.github.terrakok.cicerone.NavigatorHolder
 import com.github.terrakok.cicerone.Router
@@ -22,4 +23,8 @@ class NavigationModule {
     @Provides
     @Singleton
     fun provideNavigatorHolder(): NavigatorHolder = cicerone.getNavigatorHolder()
+
+    @Provides
+    @Singleton
+    fun provideCiceroneHolder(): CiceroneHolder = CiceroneHolder()
 }

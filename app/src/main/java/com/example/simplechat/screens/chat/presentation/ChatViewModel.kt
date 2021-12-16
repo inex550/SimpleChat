@@ -1,5 +1,6 @@
 package com.example.simplechat.screens.chat.presentation
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.simplechat.core.coreui.error.UiErrorHandler
@@ -10,26 +11,64 @@ import com.example.simplechat.screens.chat.domain.usecase.GetChatMessagesUseCase
 import com.example.simplechat.screens.chat.domain.usecase.SendMessageUseCase
 import com.example.simplechat.screens.chat.domain.websocket.UpdatesWebSocket
 import com.example.simplechat.screens.chats.domain.models.Chat
-import com.github.terrakok.cicerone.Router
+import com.example.simplechat.services.updates.service.UpdatesService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    val router: Router,
     val userPreferenceStorage: UserPreferenceStorage,
-    private val updatesWebSocket: UpdatesWebSocket,
+//    private val updatesWebSocket: UpdatesWebSocket,
     private val uiErrorHandler: UiErrorHandler,
     private val sendMessageUseCase: SendMessageUseCase,
     private val getChatMessagesUseCase: GetChatMessagesUseCase,
 ): ViewModel() {
+
+    @SuppressLint("StaticFieldLeak")
+    private var service: UpdatesService? = null
+
+    fun setService(service: UpdatesService) {
+        this.service = service
+        service.setListener(updatesListener)
+    }
+
+    fun removeService() {
+        service?.removeListener()
+        service = null
+
+        _sendEnabled.value = false
+    }
+
+    private val updatesListener = object : UpdatesService.UpdateListener {
+        override fun onOpen() {
+            _sendEnabled.value = true
+        }
+
+        override fun onUpdate(update: Update): Boolean {
+            if (update.message == null) return false
+            if (update.message.chatId != chat.id) return false
+
+            _atEndMessage.value = update.message
+
+            return true
+        }
+
+        override fun onClosed(text: String) {
+            _sendEnabled.value = false
+            _dialogError.value = text
+        }
+    }
+
+    private lateinit var chat: Chat
+
+    fun setChat(chat: Chat) {
+        this.chat = chat
+    }
 
     private val _loading = MutableStateFlow(true)
     val loading: StateFlow<Boolean> = _loading
@@ -37,21 +76,22 @@ class ChatViewModel @Inject constructor(
     private val _sendEnabled = MutableStateFlow(false)
     val sendEnabled: StateFlow<Boolean> = _sendEnabled
 
-    private val _firstBatchMessages = MutableStateFlow<List<Message>?>(null)
-    val firstBatchMessages = _firstBatchMessages.filterNotNull().map {
-        _atEndMessages.value = null
+    private val _messages = MutableStateFlow<ArrayList<Message>?>(null)
+    val messages: Flow<List<Message>> = _messages.filterNotNull().map {
         it
     }
 
     private val _atStartMessages = MutableStateFlow<List<Message>?>(null)
     val atStartMessages = _atStartMessages.filterNotNull().map {
+        _messages.value?.addAll(0, it)
         _atStartMessages.value = null
         it
     }
 
-    private val _atEndMessages = MutableStateFlow<List<Message>?>(null)
-    val atEndMessages = _atEndMessages.filterNotNull().map {
-        _atEndMessages.value = null
+    private val _atEndMessage = MutableStateFlow<Message?>(null)
+    val atEndMessage = _atEndMessage.filterNotNull().map {
+        _messages.value?.add(it)
+        _atEndMessage.value = null
         it
     }
 
@@ -74,29 +114,34 @@ class ChatViewModel @Inject constructor(
     }
 
     init {
-        updatesWebSocket.setUpdatesConnectionListener(object : UpdatesWebSocket.UpdatesConnectionListener {
-            override fun onOpen() {
-                _sendEnabled.value = true
-            }
+//        updatesWebSocket.setUpdatesConnectionListener(object : UpdatesWebSocket.UpdatesConnectionListener {
+//            override fun onOpen() {
+//                _sendEnabled.value = true
+//            }
+//
+//            override fun onNewUpdates(updates: List<Update>) {
+//                _atEndMessage.value = updates.mapNotNull { update -> update.message }
+//            }
+//
+//            override fun onClosed(text: String) {
+//                _dialogError.value = text
+//                _sendEnabled.value = false
+//            }
+//
+//        })
 
-            override fun onNewUpdates(updates: List<Update>) {
-                _atEndMessages.value = updates.mapNotNull { update -> update.message }
-            }
-
-            override fun onClosed(text: String) {
-                _dialogError.value = text
-                _sendEnabled.value = false
-            }
-
-        })
-
-        updatesWebSocket.start()
+        viewModelScope.launch(Dispatchers.IO) {
+//            updatesWebSocket.start()
+        }
     }
 
     fun loadFirstBatch(chat: Chat, batch: Int = 20) {
         viewModelScope.launch {
+            _loading.value = true
+
             try {
-                _firstBatchMessages.value = getChatMessagesUseCase.invoke(chat.id, null, batch)
+                val messages = getChatMessagesUseCase.invoke(chat.id, null, batch)
+                _messages.value = ArrayList(messages)
             } catch (e: Exception) {
                 e.printStackTrace()
                 uiErrorHandler.proceedError(e) { error ->
@@ -143,6 +188,6 @@ class ChatViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        updatesWebSocket.close()
+//        updatesWebSocket.close()
     }
 }

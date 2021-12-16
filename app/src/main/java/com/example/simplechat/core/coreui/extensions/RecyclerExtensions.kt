@@ -1,4 +1,4 @@
-package com.example.simplechat.core.coreui.util
+package com.example.simplechat.core.coreui.extensions
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView

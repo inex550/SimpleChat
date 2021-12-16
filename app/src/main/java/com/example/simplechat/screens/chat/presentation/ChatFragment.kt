@@ -1,22 +1,26 @@
 package com.example.simplechat.screens.chat.presentation
 
+import android.content.ComponentName
+import android.content.ServiceConnection
+import android.os.IBinder
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.simplechat.AppActivity
 import com.example.simplechat.R
 import com.example.simplechat.core.coreui.base.BaseFragment
 import com.example.simplechat.core.coreui.dialog.ErrorDialog
-import com.example.simplechat.core.coreui.util.launchWhenStarted
-import com.example.simplechat.core.coreui.util.makeVisible
-import com.example.simplechat.core.coreui.util.withArgs
+import com.example.simplechat.core.coreui.extensions.launchWhenStarted
+import com.example.simplechat.core.coreui.extensions.makeVisible
+import com.example.simplechat.core.coreui.extensions.withArgs
 import com.example.simplechat.databinding.FragmentChatBinding
 import com.example.simplechat.screens.chats.domain.models.Chat
+import com.example.simplechat.services.updates.service.UpdatesService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
+import java.lang.IllegalArgumentException
 
 @AndroidEntryPoint
-class ChatFragment: BaseFragment(R.layout.fragment_chat) {
+class ChatFragment private constructor(): BaseFragment(R.layout.fragment_chat) {
 
     private var _binding: FragmentChatBinding? = null
     private val binding get() = _binding!!
@@ -33,15 +37,26 @@ class ChatFragment: BaseFragment(R.layout.fragment_chat) {
         }
     )
 
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, binder: IBinder) {
+            val service = (binder as UpdatesService.UpdatesBinder).getService()
+            viewModel.setService(service)
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            viewModel.removeService()
+        }
+    }
+
     override fun prepareUi() {
 
         if (chat == null) {
             Toast.makeText(requireContext(), "Чат не был передан", Toast.LENGTH_SHORT).show()
-            viewModel.router.exit()
+            getRouter().exit()
             return
         }
 
-        (activity as? AppActivity)?.hideBottomNavigation()
+        viewModel.setChat(chat!!)
 
         _binding = FragmentChatBinding.bind(requireView())
 
@@ -67,7 +82,7 @@ class ChatFragment: BaseFragment(R.layout.fragment_chat) {
         }
 
         binding.backIv.setOnClickListener {
-            viewModel.router.exit()
+            getRouter().exit()
         }
     }
 
@@ -90,13 +105,16 @@ class ChatFragment: BaseFragment(R.layout.fragment_chat) {
             messagesAdapter.addMessagesAtStart(messages)
         }.launchWhenStarted(lifecycleScope)
 
-        viewModel.atEndMessages.onEach { messages ->
-            messagesAdapter.addMessages(messages)
+        viewModel.atEndMessage.onEach { message ->
+            messagesAdapter.addMessage(message)
             binding.messagesRv.scrollToPosition(messagesAdapter.itemCount - 1)
         }.launchWhenStarted(lifecycleScope)
 
-        viewModel.firstBatchMessages.onEach { messages ->
+        viewModel.messages.onEach { messages ->
+            UpdatesService.bindService(requireActivity().application, serviceConnection)
+
             binding.chatContentCl.makeVisible(true)
+
             messagesAdapter.addMessages(messages)
             binding.messagesRv.scrollToPosition(messagesAdapter.itemCount - 1)
         }.launchWhenStarted(lifecycleScope)
@@ -114,6 +132,18 @@ class ChatFragment: BaseFragment(R.layout.fragment_chat) {
             ErrorDialog(error)
                 .show(parentFragmentManager, null)
         }.launchWhenStarted(lifecycleScope)
+    }
+
+    override fun onPause() {
+        try {
+            requireActivity().unbindService(serviceConnection)
+        }
+        catch (e: IllegalArgumentException) {}
+        finally {
+            viewModel.removeService()
+        }
+
+        super.onPause()
     }
 
     override fun onDestroyView() {

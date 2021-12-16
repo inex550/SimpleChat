@@ -22,8 +22,9 @@ import com.example.simplechat.core.coreui.base.BaseFragment
 import com.example.simplechat.core.coreui.dialog.ErrorDialog
 import com.example.simplechat.core.coreui.dialog.OkDialog
 import com.example.simplechat.core.coreui.navigation.Screens
-import com.example.simplechat.core.coreui.util.launchWhenStarted
+import com.example.simplechat.core.coreui.extensions.launchWhenStarted
 import com.example.simplechat.databinding.FragmentProfileBinding
+import com.example.simplechat.screens.main.TabFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 
@@ -68,26 +69,13 @@ class ProfileFragment: BaseFragment(R.layout.fragment_profile) {
         }
 
     override fun prepareUi() {
-
-        (activity as? AppActivity)?.showBottomNavigation()
-
         _binding = FragmentProfileBinding.bind(requireView())
 
-        showUsername(viewModel.userPreferenceStorage.username.orEmpty())
+        binding.usernameEt.setText(viewModel.userPreferenceStorage.username)
 
         showAvatar(viewModel.userPreferenceStorage.avatar)
 
-        binding.topPanel.exitToLoginIv.setOnClickListener {
-            viewModel.userPreferenceStorage.clearPrefs()
-            viewModel.router.newRootChain(Screens.loginScreen())
-        }
-
         setupProfileUi()
-    }
-
-    private fun showUsername(username: String) {
-        binding.usernameEt.setText(username)
-        binding.topPanel.titleUsernameTv.text = username
     }
 
     private fun showAvatar(avatar: String?) {
@@ -162,7 +150,7 @@ class ProfileFragment: BaseFragment(R.layout.fragment_profile) {
             usernameChanged = false
             avatarChanged = false
 
-            showUsername(binding.usernameEt.text.toString())
+            (parentFragment as? TabFragment)?.updateTopPanelUsername()
 
             binding.saveBtn.isEnabled = false
         }.launchWhenStarted(lifecycleScope)

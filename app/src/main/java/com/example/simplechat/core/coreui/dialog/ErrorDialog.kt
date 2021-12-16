@@ -7,8 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
-import com.example.simplechat.R
-import com.example.simplechat.core.coreui.util.makeVisible
+import com.example.simplechat.core.coreui.extensions.makeVisible
 import com.example.simplechat.databinding.DialogErrorBinding
 
 class ErrorDialog(

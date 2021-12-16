@@ -4,8 +4,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.simplechat.core.coreui.navigation.Screens
 import com.example.simplechat.core.coreapi.common.preference.UserPreferenceStorage
-import com.example.simplechat.core.coreui.util.makeVisible
+import com.example.simplechat.core.coreui.extensions.makeVisible
+import com.example.simplechat.core.coreui.navigation.subnavigation.CiceroneHolder
+import com.example.simplechat.core.coreui.navigation.subnavigation.RouterProvider
 import com.example.simplechat.databinding.ActivityAppBinding
+import com.example.simplechat.screens.auth.presentation.LoginFragment
 import com.github.terrakok.cicerone.NavigatorHolder
 import com.github.terrakok.cicerone.Router
 import com.github.terrakok.cicerone.androidx.AppNavigator
@@ -13,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AppActivity : AppCompatActivity() {
+class AppActivity : AppCompatActivity(), RouterProvider {
 
     @Inject
     lateinit var router: Router
@@ -21,10 +24,10 @@ class AppActivity : AppCompatActivity() {
     @Inject
     lateinit var navigatorHolder: NavigatorHolder
 
+    private val navigator = AppNavigator(this, R.id.container, supportFragmentManager)
+
     @Inject
     lateinit var userPreferenceStorage: UserPreferenceStorage
-
-    private val navigator = AppNavigator(this, R.id.container)
 
     lateinit var binding: ActivityAppBinding
 
@@ -33,41 +36,10 @@ class AppActivity : AppCompatActivity() {
         binding = ActivityAppBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupScreensBtv()
-
         if (userPreferenceStorage.token == null)
-            router.newRootChain(Screens.loginScreen())
+            router.newRootScreen(Screens.loginScreen())
         else
-            router.newRootChain(Screens.chatsScreen())
-    }
-
-    private fun setupScreensBtv() {
-        binding.selectScreensBnv.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.chats_item -> {
-                    router.newRootChain(Screens.chatsScreen())
-                    true
-                }
-                R.id.profile_item -> {
-                    router.newRootChain(Screens.profileScreen())
-                    true
-                }
-                else -> false
-            }
-        }
-    }
-
-    fun showBottomNavigation() {
-        binding.borderView.makeVisible(true)
-        binding.selectScreensBnv.makeVisible(true)
-    }
-    fun hideBottomNavigation() {
-        binding.borderView.makeVisible(false)
-        binding.selectScreensBnv.makeVisible(false)
-    }
-
-    fun checkFirstBnvItem() {
-        binding.selectScreensBnv.selectedItemId = R.id.chats_item
+            router.newRootScreen(Screens.mainScreen())
     }
 
     override fun onResumeFragments() {
@@ -79,4 +51,6 @@ class AppActivity : AppCompatActivity() {
         navigatorHolder.removeNavigator()
         super.onPause()
     }
+
+    override fun provideRouter(): Router = router
 }
