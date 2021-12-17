@@ -11,8 +11,14 @@ class App: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        NotificationChannelManager.createChannel(this)
+        INSTANCE = this
 
-        UpdatesService.createService(this)
+        NotificationChannelManager.createChannel(this)
+        UpdatesService.createService()
+    }
+
+    companion object {
+        lateinit var INSTANCE: App
+            private set
     }
 }

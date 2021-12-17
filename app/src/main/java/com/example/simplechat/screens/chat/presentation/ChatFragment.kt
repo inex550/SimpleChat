@@ -111,7 +111,7 @@ class ChatFragment private constructor(): BaseFragment(R.layout.fragment_chat) {
         }.launchWhenStarted(lifecycleScope)
 
         viewModel.messages.onEach { messages ->
-            UpdatesService.bindService(requireActivity().application, serviceConnection)
+            UpdatesService.bindService(serviceConnection)
 
             binding.chatContentCl.makeVisible(true)
 
@@ -135,13 +135,8 @@ class ChatFragment private constructor(): BaseFragment(R.layout.fragment_chat) {
     }
 
     override fun onPause() {
-        try {
-            requireActivity().unbindService(serviceConnection)
-        }
-        catch (e: IllegalArgumentException) {}
-        finally {
-            viewModel.removeService()
-        }
+        UpdatesService.unbindService(serviceConnection)
+        viewModel.removeService()
 
         super.onPause()
     }

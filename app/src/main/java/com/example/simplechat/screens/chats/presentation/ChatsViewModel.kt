@@ -1,5 +1,6 @@
 package com.example.simplechat.screens.chats.presentation
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.simplechat.core.coreui.error.UiErrorHandler
@@ -8,6 +9,10 @@ import com.example.simplechat.screens.chats.domain.models.Chat
 import com.example.simplechat.screens.chats.domain.usecase.CreatePrivateChatUseCase
 import com.example.simplechat.screens.chats.domain.usecase.DeleteChatUseCase
 import com.example.simplechat.screens.chats.domain.usecase.GetMyChatsUseCase
+import com.example.simplechat.services.updates.models.Update
+import com.example.simplechat.services.updates.models.UpdateNet
+import com.example.simplechat.services.updates.models.UpdateType
+import com.example.simplechat.services.updates.service.UpdatesService
 import com.github.terrakok.cicerone.Router
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,8 +30,43 @@ class ChatsViewModel @Inject constructor (
     private val getMyChatsUseCase: GetMyChatsUseCase,
     private val createPrivateChatUseCase: CreatePrivateChatUseCase,
     private val deleteChatUseCase: DeleteChatUseCase,
-    private val uiErrorHandler: UiErrorHandler,
+    private val uiErrorHandler: UiErrorHandler
 ): ViewModel() {
+
+    @SuppressLint("StaticFieldLeak")
+    private var service: UpdatesService? = null
+
+    val hasService get() = service != null
+
+    fun setService(service: UpdatesService) {
+        this.service = service
+        service.setListener(updatesListener)
+    }
+
+    fun removeService() {
+        service?.removeListener()
+        service = null
+    }
+
+    private val updatesListener = object : UpdatesService.UpdateListener {
+        override fun onOpen() {}
+
+        override fun onUpdate(update: Update): Boolean {
+            if (update.chat == null) return false
+
+            if (update.type == UpdateType.NEW)
+                _newChat.value = update.chat
+
+            else if (update.type == UpdateType.REMOVE)
+                _removeChat.value = update.chat
+
+            return true
+        }
+
+        override fun onClosed(text: String) {
+            _dialogError.value = text
+        }
+    }
 
     private val _loading = MutableStateFlow(true)
     val loading: StateFlow<Boolean> = _loading
@@ -56,9 +96,9 @@ class ChatsViewModel @Inject constructor (
         it
     }
 
-    private val _showError = MutableStateFlow<String?>(null)
-    val showError = _showError.filterNotNull().map {
-        _showError.value = null
+    private val _dialogError = MutableStateFlow<String?>(null)
+    val dialogError = _dialogError.filterNotNull().map {
+        _dialogError.value = null
         it
     }
 
@@ -87,10 +127,10 @@ class ChatsViewModel @Inject constructor (
     fun addChat(username: String) {
         viewModelScope.launch {
             try {
-                _newChat.value = createPrivateChatUseCase.invoke(username)
+                createPrivateChatUseCase.invoke(username)
             } catch (e: Exception) {
                 uiErrorHandler.proceedError(e) { error ->
-                    _showError.value = error
+                    _dialogError.value = error
                 }
             }
         }
@@ -100,10 +140,9 @@ class ChatsViewModel @Inject constructor (
         viewModelScope.launch {
             try {
                 deleteChatUseCase.invoke(chat.id)
-                _removeChat.value = chat
             } catch (e: Exception) {
                 uiErrorHandler.proceedError(e) { error ->
-                    _showError.value = error
+                    _dialogError.value = error
                 }
             }
         }

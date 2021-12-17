@@ -12,11 +12,8 @@ abstract class BaseFragment(@LayoutRes layoutId: Int): Fragment(layoutId) {
     open fun prepareUi() = Unit
     open fun setupViewModel() = Unit
 
-    fun getRouter(local: Boolean = true): Router =
-        if (local)
+    fun getRouter(): Router =
             (parentFragment as? RouterProvider)?.provideRouter() ?: (activity as? RouterProvider)?.provideRouter()!!
-        else
-            (activity as? RouterProvider)?.provideRouter()!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

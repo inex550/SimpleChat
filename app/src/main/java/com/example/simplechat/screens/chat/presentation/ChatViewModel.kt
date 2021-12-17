@@ -6,14 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.simplechat.core.coreui.error.UiErrorHandler
 import com.example.simplechat.core.coreapi.common.preference.UserPreferenceStorage
 import com.example.simplechat.screens.chat.domain.models.Message
-import com.example.simplechat.screens.chat.domain.models.Update
 import com.example.simplechat.screens.chat.domain.usecase.GetChatMessagesUseCase
 import com.example.simplechat.screens.chat.domain.usecase.SendMessageUseCase
-import com.example.simplechat.screens.chat.domain.websocket.UpdatesWebSocket
 import com.example.simplechat.screens.chats.domain.models.Chat
+import com.example.simplechat.services.updates.models.Update
+import com.example.simplechat.services.updates.models.UpdateNet
 import com.example.simplechat.services.updates.service.UpdatesService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -23,7 +22,6 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     val userPreferenceStorage: UserPreferenceStorage,
-//    private val updatesWebSocket: UpdatesWebSocket,
     private val uiErrorHandler: UiErrorHandler,
     private val sendMessageUseCase: SendMessageUseCase,
     private val getChatMessagesUseCase: GetChatMessagesUseCase,
@@ -113,28 +111,6 @@ class ChatViewModel @Inject constructor(
         it
     }
 
-    init {
-//        updatesWebSocket.setUpdatesConnectionListener(object : UpdatesWebSocket.UpdatesConnectionListener {
-//            override fun onOpen() {
-//                _sendEnabled.value = true
-//            }
-//
-//            override fun onNewUpdates(updates: List<Update>) {
-//                _atEndMessage.value = updates.mapNotNull { update -> update.message }
-//            }
-//
-//            override fun onClosed(text: String) {
-//                _dialogError.value = text
-//                _sendEnabled.value = false
-//            }
-//
-//        })
-
-        viewModelScope.launch(Dispatchers.IO) {
-//            updatesWebSocket.start()
-        }
-    }
-
     fun loadFirstBatch(chat: Chat, batch: Int = 20) {
         viewModelScope.launch {
             _loading.value = true
@@ -184,10 +160,5 @@ class ChatViewModel @Inject constructor(
                 _sendEnabled.value = true
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-//        updatesWebSocket.close()
     }
 }

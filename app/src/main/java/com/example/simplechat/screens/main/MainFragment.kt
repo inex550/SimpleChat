@@ -1,6 +1,7 @@
 package com.example.simplechat.screens.main
 
 import android.os.Bundle
+import androidx.lifecycle.LifecycleOwner
 import com.example.simplechat.R
 import com.example.simplechat.core.coreapi.common.preference.UserPreferenceStorage
 import com.example.simplechat.core.coreui.base.BaseFragment
@@ -17,7 +18,7 @@ class MainFragment: BaseFragment(R.layout.fragment_main) {
     private val binding get() = _binding!!
 
     @Inject
-    lateinit var router: Router
+    lateinit var baseRouter: Router
 
     @Inject
     lateinit var userPreferenceStorage: UserPreferenceStorage
@@ -76,12 +77,12 @@ class MainFragment: BaseFragment(R.layout.fragment_main) {
         transaction.commitNow()
     }
 
-    fun setupTopPanel() {
+    private fun setupTopPanel() {
         binding.topPanel.titleUsernameTv.text = userPreferenceStorage.username
 
         binding.topPanel.exitToLoginIv.setOnClickListener {
             userPreferenceStorage.clearPrefs()
-            router.newRootScreen(Screens.loginScreen())
+            baseRouter.newRootScreen(Screens.loginScreen())
         }
     }
 

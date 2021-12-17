@@ -4,11 +4,10 @@ import com.example.simplechat.screens.auth.domain.models.AuthModel
 import com.example.simplechat.screens.auth.domain.models.UserIdentifiers
 import com.example.simplechat.screens.chat.domain.models.Message
 import com.example.simplechat.screens.chat.domain.models.SendMessage
-import com.example.simplechat.screens.chat.domain.models.Update
 import com.example.simplechat.screens.chats.data.models.ChatNet
 import com.example.simplechat.screens.chats.data.models.NewPrivateChat
-import com.example.simplechat.screens.chats.domain.models.Chat
 import com.example.simplechat.screens.profille.domain.models.UploadedFile
+import com.example.simplechat.services.updates.models.UpdateNet
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.http.*
@@ -25,7 +24,7 @@ interface ApiService {
     suspend fun sendMessage(@Path("chatId") chatId: Int, @Body message: SendMessage): Message
 
     @GET("getUpdates")
-    suspend fun getUpdates(): List<Update>
+    suspend fun getUpdates(): List<UpdateNet>
 
     @GET("chat/my")
     suspend fun getMyChats(): List<ChatNet>

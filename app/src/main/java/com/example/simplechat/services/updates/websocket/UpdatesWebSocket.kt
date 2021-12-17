@@ -4,7 +4,7 @@ import android.content.Context
 import com.example.simplechat.R
 import com.example.simplechat.core.coreimpl.network.di.NetworkModule
 import com.example.simplechat.core.coreapi.common.preference.UserPreferenceStorage
-import com.example.simplechat.screens.chat.domain.models.Update
+import com.example.simplechat.services.updates.models.UpdateNet
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.neovisionaries.ws.client.*
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 import javax.inject.Inject
 
-typealias OnNewUpdatesListener = (List<Update>) -> Unit
+typealias OnNewUpdatesListener = (List<UpdateNet>) -> Unit
 
 class UpdatesWebSocket @Inject constructor(
     private val gson: Gson,
@@ -33,14 +33,15 @@ class UpdatesWebSocket @Inject constructor(
 
     private var webSocket: WebSocket? = null
 
-    val isOpen: Boolean get() = webSocket?.isOpen == true
+    var isConnected: Boolean = false
+        private set
 
     override fun onTextMessage(websocket: WebSocket, text: String) {
         super.onTextMessage(websocket, text)
 
         try {
-            val listType = object: TypeToken<List<Update>>(){}.type
-            val updates: List<Update> = gson.fromJson(text, listType)
+            val listType = object: TypeToken<List<UpdateNet>>(){}.type
+            val updates: List<UpdateNet> = gson.fromJson(text, listType)
 
             updatesConnectionListener?.onNewUpdates(updates)
         } catch (e: Exception) {
@@ -53,6 +54,8 @@ class UpdatesWebSocket @Inject constructor(
         headers: MutableMap<String, MutableList<String>>?
     ) {
         super.onConnected(websocket, headers)
+        isConnected = true
+
         updatesConnectionListener?.onOpen()
     }
 
@@ -68,6 +71,8 @@ class UpdatesWebSocket @Inject constructor(
         closedByServer: Boolean
     ) {
         super.onDisconnected(websocket, serverCloseFrame, clientCloseFrame, closedByServer)
+        isConnected = false
+
         updatesConnectionListener?.onClosed(context.getString(R.string.error_connection_closed))
     }
 
@@ -86,6 +91,10 @@ class UpdatesWebSocket @Inject constructor(
         }
     }
 
+    fun restart() {
+        webSocket?.recreate(5000)
+    }
+
     fun close() {
         webSocket?.disconnect()
     }
@@ -99,7 +108,7 @@ class UpdatesWebSocket @Inject constructor(
 
         fun onOpen()
 
-        fun onNewUpdates(updates: List<Update>)
+        fun onNewUpdates(updateNets: List<UpdateNet>)
 
         fun onClosed(text: String)
     }
