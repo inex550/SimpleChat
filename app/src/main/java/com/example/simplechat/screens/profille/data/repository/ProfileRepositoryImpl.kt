@@ -1,13 +1,12 @@
 package com.example.simplechat.screens.profille.data.repository
 
-import com.example.simplechat.core.coreimpl.network.apiservice.ApiService
+import com.example.simplechat.core.network.apiservice.ApiService
 import com.example.simplechat.screens.profille.domain.models.UploadedFile
 import com.example.simplechat.screens.profille.domain.repository.ProfileRepository
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
-import java.net.URI
 import javax.inject.Inject
 
 class ProfileRepositoryImpl @Inject constructor(

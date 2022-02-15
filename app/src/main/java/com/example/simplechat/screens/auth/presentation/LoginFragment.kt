@@ -3,10 +3,10 @@ package com.example.simplechat.screens.auth.presentation
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.simplechat.R
-import com.example.simplechat.core.coreui.base.BaseFragment
-import com.example.simplechat.core.coreui.dialog.ErrorDialog
-import com.example.simplechat.core.coreui.navigation.Screens
-import com.example.simplechat.core.coreui.extensions.launchWhenStarted
+import com.example.simplechat.core.ui.base.BaseFragment
+import com.example.simplechat.core.ui.dialog.ErrorDialog
+import com.example.simplechat.core.ui.navigation.Screens
+import com.example.simplechat.core.ui.extensions.launchWhenStarted
 import com.example.simplechat.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach

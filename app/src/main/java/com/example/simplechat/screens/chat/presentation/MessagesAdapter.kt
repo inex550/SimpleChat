@@ -9,13 +9,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.simplechat.R
-import com.example.simplechat.core.coreimpl.network.di.NetworkModule
+import com.example.simplechat.core.network.di.NetworkModule
 import com.example.simplechat.screens.chat.domain.models.Message
 
-typealias OnLoaderEnabled = (first: Message) -> Unit
-
 class MessagesAdapter(
-    private val onLoaderEnabled: OnLoaderEnabled
+    private val loadMessagesCallback: LoadMessagesCallback
 ): RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
 
     var isLoaderEnabled: Boolean = false
@@ -101,7 +99,7 @@ class MessagesAdapter(
         isLoaderEnabled = true
         notifyItemInserted(0)
 
-        onLoaderEnabled(messages[1]!!)
+        messages[1]?.let { loadMessagesCallback.loadMessages(it.id) }
     }
 
     fun removeLoader() {
@@ -110,6 +108,10 @@ class MessagesAdapter(
         messages.removeAt(0)
         isLoaderEnabled = false
         notifyItemRemoved(0)
+    }
+
+    fun interface LoadMessagesCallback {
+        fun loadMessages(from: Int)
     }
 
     class LoaderViewHolder(itemView: View): BaseViewHolder(itemView)

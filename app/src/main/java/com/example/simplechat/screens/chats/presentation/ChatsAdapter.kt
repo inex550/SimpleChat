@@ -6,24 +6,18 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.simplechat.R
-import com.example.simplechat.core.coreimpl.network.di.NetworkModule
+import com.example.simplechat.core.network.di.NetworkModule
 import com.example.simplechat.databinding.ItemChatBinding
 import com.example.simplechat.screens.chats.domain.models.Chat
 
-typealias ChatsCountChangedListener = (Int) -> Unit
-
-typealias OnDeleteChatClickListener = (Chat) -> Unit
-
-typealias OnChatClickListener = (Chat) -> Unit
-
 class ChatsAdapter(
-    private val onChatClickListener: OnChatClickListener,
-    private val onDeleteChatClickListener: OnDeleteChatClickListener,
+    private val listener: Listener
 ): RecyclerView.Adapter<ChatsAdapter.ViewHolder>() {
 
     private val chats: ArrayList<Chat> = arrayListOf()
 
-    fun getChats(): List<Chat> = chats
+    fun getChat(position: Int): Chat =
+        chats[position]
 
     @SuppressLint("NotifyDataSetChanged")
     fun setChats(items: List<Chat>) {
@@ -31,7 +25,7 @@ class ChatsAdapter(
             clear()
             addAll(items)
 
-            chatsCountChangedListener?.invoke(chats.size)
+            listener.onChatsCountChanged(chats.size)
         }
         notifyDataSetChanged()
     }
@@ -40,7 +34,7 @@ class ChatsAdapter(
         chats.add(chat)
         notifyItemInserted(chats.lastIndex)
 
-        chatsCountChangedListener?.invoke(chats.size)
+        listener.onChatsCountChanged(chats.size)
     }
 
     fun removeChat(chat: Chat) {
@@ -49,13 +43,7 @@ class ChatsAdapter(
         chats.removeAt(chatIndex)
         notifyItemRemoved(chatIndex)
 
-        chatsCountChangedListener?.invoke(chats.size)
-    }
-
-    private var chatsCountChangedListener: ChatsCountChangedListener? = null
-
-    fun setChatsCountChangedListener(listener: ChatsCountChangedListener) {
-        chatsCountChangedListener = listener
+        listener.onChatsCountChanged(chats.size)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
@@ -66,6 +54,14 @@ class ChatsAdapter(
     }
 
     override fun getItemCount(): Int = chats.size
+
+    interface Listener {
+        fun onChatsCountChanged(count: Int)
+
+        fun onChatDeleted(chat: Chat)
+
+        fun onChatClicked(chat: Chat)
+    }
 
     inner class ViewHolder(
         private val binding: ItemChatBinding
@@ -93,12 +89,8 @@ class ChatsAdapter(
             if (chat.avatar != null)
                 binding.chatIconIv.load(NetworkModule.BASE_IMAGE_URL + chat.avatar)
 
-            binding.removeChatBtn.setOnClickListener {
-                onDeleteChatClickListener(chat)
-            }
-
             binding.containerCl.setOnClickListener {
-                onChatClickListener(chat)
+                listener.onChatClicked(chat)
             }
         }
     }

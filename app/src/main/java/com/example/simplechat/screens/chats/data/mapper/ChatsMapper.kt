@@ -2,7 +2,7 @@ package com.example.simplechat.screens.chats.data.mapper
 
 import android.content.Context
 import com.example.simplechat.R
-import com.example.simplechat.core.coreapi.common.preference.UserPreferenceStorage
+import com.example.simplechat.core.preference.UserPreferenceStorage
 import com.example.simplechat.screens.chats.data.models.ChatNet
 import com.example.simplechat.screens.chats.domain.models.Chat
 import dagger.hilt.android.qualifiers.ApplicationContext

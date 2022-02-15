@@ -19,6 +19,6 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         style="@style/TextView.White.16"
-        tools:text="Какоя-то ошибка..."/>
+        tools:text="Какая-то ошибка..."/>
 
 </LinearLayout>

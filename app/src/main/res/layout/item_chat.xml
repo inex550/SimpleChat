@@ -41,23 +41,10 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/remove_chat_btn"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/white_transparent_20"
         android:layout_marginEnd="8dp"
         tools:src="@drawable/ic_person" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/remove_chat_btn"
-        android:layout_width="40dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/black_gray"
-        android:padding="8dp"
-        app:icon="@drawable/ic_trash"
-        app:iconGravity="end"
-        app:iconTint="@android:color/holo_red_light"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

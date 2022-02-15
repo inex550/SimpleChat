@@ -2,16 +2,13 @@ package com.example.simplechat.services.updates.websocket
 
 import android.content.Context
 import com.example.simplechat.R
-import com.example.simplechat.core.coreimpl.network.di.NetworkModule
-import com.example.simplechat.core.coreapi.common.preference.UserPreferenceStorage
+import com.example.simplechat.core.network.di.NetworkModule
+import com.example.simplechat.core.preference.UserPreferenceStorage
 import com.example.simplechat.services.updates.models.UpdateNet
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.neovisionaries.ws.client.*
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.lang.Exception
 import javax.inject.Inject
 
@@ -82,17 +79,11 @@ class UpdatesWebSocket @Inject constructor(
 
         webSocket?.addListener(this)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                webSocket?.connect()
-            } catch (e: WebSocketException) {
-                updatesConnectionListener?.onClosed(context.getString(R.string.error_connecting_error))
-            }
+        try {
+            webSocket?.connect()
+        } catch (e: WebSocketException) {
+            updatesConnectionListener?.onClosed(context.getString(R.string.error_connecting_error), whenConnecting = true)
         }
-    }
-
-    fun restart() {
-        webSocket?.recreate(5000)
     }
 
     fun close() {
@@ -110,6 +101,6 @@ class UpdatesWebSocket @Inject constructor(
 
         fun onNewUpdates(updateNets: List<UpdateNet>)
 
-        fun onClosed(text: String)
+        fun onClosed(text: String, whenConnecting: Boolean=false)
     }
 }

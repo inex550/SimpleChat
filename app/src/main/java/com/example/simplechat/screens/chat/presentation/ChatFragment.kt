@@ -4,20 +4,20 @@ import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.simplechat.R
-import com.example.simplechat.core.coreui.base.BaseFragment
-import com.example.simplechat.core.coreui.dialog.ErrorDialog
-import com.example.simplechat.core.coreui.extensions.launchWhenStarted
-import com.example.simplechat.core.coreui.extensions.makeVisible
-import com.example.simplechat.core.coreui.extensions.withArgs
+import com.example.simplechat.core.ui.base.BaseFragment
+import com.example.simplechat.core.ui.dialog.ErrorDialog
+import com.example.simplechat.core.ui.extensions.launchWhenStarted
+import com.example.simplechat.core.ui.extensions.makeVisible
+import com.example.simplechat.core.ui.extensions.withArgs
 import com.example.simplechat.databinding.FragmentChatBinding
 import com.example.simplechat.screens.chats.domain.models.Chat
 import com.example.simplechat.services.updates.service.UpdatesService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
-import java.lang.IllegalArgumentException
 
 @AndroidEntryPoint
 class ChatFragment private constructor(): BaseFragment(R.layout.fragment_chat) {
@@ -32,8 +32,8 @@ class ChatFragment private constructor(): BaseFragment(R.layout.fragment_chat) {
     private val viewModel: ChatViewModel by viewModels()
 
     private val messagesAdapter = MessagesAdapter(
-        onLoaderEnabled = { message ->
-            viewModel.loadOldMessagesAt(chat!!, message.id-1)
+        loadMessagesCallback = { messageId ->
+            viewModel.loadOldMessagesAt(chat!!, messageId-1)
         }
     )
 
@@ -102,16 +102,22 @@ class ChatFragment private constructor(): BaseFragment(R.layout.fragment_chat) {
         }.launchWhenStarted(lifecycleScope)
 
         viewModel.atStartMessages.onEach { messages ->
+            binding.messagesEmptyTv.makeVisible(false)
+
             messagesAdapter.addMessagesAtStart(messages)
         }.launchWhenStarted(lifecycleScope)
 
         viewModel.atEndMessage.onEach { message ->
+            binding.messagesEmptyTv.makeVisible(false)
+
             messagesAdapter.addMessage(message)
             binding.messagesRv.scrollToPosition(messagesAdapter.itemCount - 1)
         }.launchWhenStarted(lifecycleScope)
 
         viewModel.messages.onEach { messages ->
             UpdatesService.bindService(serviceConnection)
+
+            binding.messagesEmptyTv.isVisible = messages.isEmpty()
 
             binding.chatContentCl.makeVisible(true)
 
@@ -132,6 +138,14 @@ class ChatFragment private constructor(): BaseFragment(R.layout.fragment_chat) {
             ErrorDialog(error)
                 .show(parentFragmentManager, null)
         }.launchWhenStarted(lifecycleScope)
+
+        viewModel.currentChatDeleted.onEach { isDeleted ->
+            if (!isDeleted) return@onEach
+
+            ErrorDialog("Текущий чат был удалён одним из его владельцев")
+                .show(parentFragmentManager, null)
+            getRouter().exit()
+        }
     }
 
     override fun onPause() {

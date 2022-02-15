@@ -1,9 +1,6 @@
 package com.example.simplechat.screens.profille.domain.repository
 
-import com.example.simplechat.core.coreimpl.network.apiservice.ApiService
 import com.example.simplechat.screens.profille.domain.models.UploadedFile
-import java.net.URI
-import javax.inject.Inject
 
 interface ProfileRepository {
 

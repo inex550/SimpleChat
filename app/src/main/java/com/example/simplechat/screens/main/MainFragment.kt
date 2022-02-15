@@ -1,11 +1,10 @@
 package com.example.simplechat.screens.main
 
 import android.os.Bundle
-import androidx.lifecycle.LifecycleOwner
 import com.example.simplechat.R
-import com.example.simplechat.core.coreapi.common.preference.UserPreferenceStorage
-import com.example.simplechat.core.coreui.base.BaseFragment
-import com.example.simplechat.core.coreui.navigation.Screens
+import com.example.simplechat.core.preference.UserPreferenceStorage
+import com.example.simplechat.core.ui.base.BaseFragment
+import com.example.simplechat.core.ui.navigation.Screens
 import com.example.simplechat.databinding.FragmentMainBinding
 import com.github.terrakok.cicerone.Router
 import dagger.hilt.android.AndroidEntryPoint

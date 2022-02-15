@@ -1,6 +1,6 @@
 package com.example.simplechat.screens.chat.data.repository
 
-import com.example.simplechat.core.coreimpl.network.apiservice.ApiService
+import com.example.simplechat.core.network.apiservice.ApiService
 import com.example.simplechat.screens.chat.domain.models.Message
 import com.example.simplechat.screens.chat.domain.models.SendMessage
 import com.example.simplechat.screens.chat.domain.repository.ChatRepository

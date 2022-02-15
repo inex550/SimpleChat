@@ -38,4 +38,5 @@
     <string name="menu_profile">Профиль</string>
     <string name="profile_username">Username</string>
     <string name="profile_save">Сохранить</string>
+    <string name="here_empty_label">Тут пусто...</string>
 </resources>

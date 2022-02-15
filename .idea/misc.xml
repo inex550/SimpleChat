@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/drawable/bg_bottom_sheet.xml" value="0.39692307692307693" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/drawable/bg_color_primary_outlined_12.xml" value="0.46822916666666664" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/drawable/bg_dark_purple_outlined_16.xml" value="0.403125" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/drawable/bg_ripple_dark_gray_outlined_8.xml" value="0.2359375" />
@@ -19,6 +20,7 @@
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/drawable/ic_no_result.xml" value="0.590625" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/drawable/ic_password.xml" value="0.590625" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/drawable/ic_person.xml" value="0.590625" />
+        <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/drawable/ic_trash.xml" value="0.293" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/activity_app.xml" value="0.33" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/activity_auth.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/activity_main.xml" value="0.5744791666666667" />
@@ -32,12 +34,15 @@
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/fragment_profile.xml" value="0.33" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/fragment_register.xml" value="0.33" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/fragment_rooms.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/fragment_search_user.xml" value="0.33" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/fragment_tab.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/fragment_user_search.xml" value="2.6535714285714285" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/item_chat.xml" value="0.5" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/item_chat_list.xml" value="0.5744791666666667" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/item_loading.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/item_my_message.xml" value="0.5" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/item_room.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/item_user.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/item_user_message.xml" value="0.5" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/layout_error.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/inex5/AndroidStudioProjects/SimpleChat/app/src/main/res/layout/layout_exit_top_panel.xml" value="0.2390625" />

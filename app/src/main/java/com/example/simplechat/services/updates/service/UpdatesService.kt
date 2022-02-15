@@ -7,17 +7,19 @@ import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import coil.transform.CircleCropTransformation
 import com.example.simplechat.App
 import com.example.simplechat.R
-import com.example.simplechat.core.coreapi.common.preference.UserPreferenceStorage
-import com.example.simplechat.core.coreui.base.BaseService
-import com.example.simplechat.core.coreui.notification.NotificationChannelManager
+import com.example.simplechat.core.preference.UserPreferenceStorage
+import com.example.simplechat.core.ui.base.BaseService
+import com.example.simplechat.core.ui.notification.NotificationChannelManager
+import com.example.simplechat.screens.chat.domain.models.Message
+import com.example.simplechat.screens.chats.domain.models.Chat
 import com.example.simplechat.services.updates.models.Update
 import com.example.simplechat.services.updates.models.UpdateNet
+import com.example.simplechat.services.updates.models.UpdateType
 import com.example.simplechat.services.updates.websocket.UpdatesWebSocket
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
@@ -55,61 +57,73 @@ class UpdatesService: BaseService() {
         }
 
         override fun onNewUpdates(updateNets: List<UpdateNet>) {
-
             val updates = updateNets.map { it.transform(this@UpdatesService, userPreferenceStorage.id.orEmpty()) }
             proceedUpdates(updates)
         }
 
-        override fun onClosed(text: String) {
-            updatesWebSocket.start()
+        override fun onClosed(text: String, whenConnecting: Boolean) {
+            if (INSTANCE == null) return
 
-            if (isReconnecting) return
+            if (!isReconnecting) {
+                listener?.onClosed(text)
+                isReconnecting = true
+            }
 
-            listener?.onClosed(text)
-            isReconnecting = true
+            if (!whenConnecting)
+                updatesWebSocket.start()
         }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        INSTANCE = this
     }
 
     fun proceedUpdates(updates: List<Update>) {
         for (update in updates) {
             val listenerResult = listener?.onUpdate(update) ?: false
 
-            if (!listenerResult) {
-                if (update.message != null && update.message.senderId.toString() == userPreferenceStorage.id)
-                    showNotification(
-                        title = getString(R.string.message_label),
-                        message = "${update.message.sender.username}: ${update.message.text}"
-                    )
+            if (!listenerResult && update.type == UpdateType.NEW) {
+                if (update.message != null)
+                    showNewMessageNotification(update.message)
+
+                else if (update.chat != null)
+                    showNewChatNotification(update.chat)
             }
         }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startWebSocketListen()
-
-        return START_STICKY
-    }
-
-    override fun onBind(intent: Intent?): IBinder {
-        if (!updatesWebSocket.isConnected) {
-            startWebSocketListen()
-        }
-
-        return binder
-    }
-
-    private fun startWebSocketListen() {
         updatesWebSocket.setUpdatesConnectionListener(updatesConnectionListener)
 
         serviceScope.launch {
             updatesWebSocket.start()
         }
+
+        return START_STICKY
     }
 
-    private fun showNotification(title: String, message: String) {
+    override fun onBind(intent: Intent?): IBinder = binder
+
+    private fun showNewMessageNotification(message: Message) {
         val notification = NotificationCompat.Builder(this, NotificationChannelManager.CHANNEL_ID)
-            .setContentTitle(title)
-            .setContentText(message)
+            .setContentTitle(getString(R.string.message_label))
+            .setContentText("${message.sender.username}: ${message.text}")
+            .setSmallIcon(R.drawable.ic_notification)
+            .build()
+
+        NotificationManagerCompat.from(this).notify(notificationId++, notification)
+    }
+
+    private fun showNewChatNotification(chat: Chat) {
+        val notification = NotificationCompat.Builder(this, NotificationChannelManager.CHANNEL_ID)
+            .setContentTitle("Новый чат")
+            .setContentText(
+                if (chat.user == null)
+                    "Вас добавили в ${chat.name}"
+                else
+                    "${chat.user.username} начал переписку с вами"
+            )
             .setSmallIcon(R.drawable.ic_notification)
             .build()
 
@@ -129,24 +143,25 @@ class UpdatesService: BaseService() {
     }
 
     override fun onDestroy() {
+        INSTANCE = null
+//        updatesWebSocket.close()
         super.onDestroy()
-        isCreated = false
     }
 
     companion object {
-        private var isCreated = false
+
+        var INSTANCE: UpdatesService? = null
+            private set
 
         fun createService() {
-            if (isCreated) return
+            if (INSTANCE != null) return
 
             val serviceIntent = Intent(App.INSTANCE, UpdatesService::class.java)
             App.INSTANCE.startService(serviceIntent)
-
-            isCreated = true
         }
 
         fun bindService(connection: ServiceConnection) {
-            if (!isCreated)
+            if (INSTANCE == null)
                 createService()
 
             val serviceIntent = Intent(App.INSTANCE, UpdatesService::class.java)
@@ -158,6 +173,13 @@ class UpdatesService: BaseService() {
                 App.INSTANCE.unbindService(connection)
             }
             catch (e: IllegalArgumentException) {}
+        }
+
+        fun stopService() {
+            if (INSTANCE == null) return
+
+            val serviceIntent = Intent(App.INSTANCE, UpdatesService::class.java)
+            App.INSTANCE.stopService(serviceIntent)
         }
 
         private var notificationId = 0

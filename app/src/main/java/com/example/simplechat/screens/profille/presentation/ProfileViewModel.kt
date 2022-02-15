@@ -1,19 +1,15 @@
 package com.example.simplechat.screens.profille.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.simplechat.core.coreapi.common.preference.UserPreferenceStorage
-import com.example.simplechat.core.coreui.error.UiErrorHandler
+import com.example.simplechat.core.preference.UserPreferenceStorage
+import com.example.simplechat.core.ui.error.UiErrorHandler
 import com.example.simplechat.screens.profille.domain.repository.ProfileRepository
-import com.github.terrakok.cicerone.Router
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import java.net.URI
 import javax.inject.Inject
 
 @HiltViewModel

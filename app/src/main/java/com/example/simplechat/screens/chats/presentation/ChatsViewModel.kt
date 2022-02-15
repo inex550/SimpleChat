@@ -3,14 +3,13 @@ package com.example.simplechat.screens.chats.presentation
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.simplechat.core.coreui.error.UiErrorHandler
-import com.example.simplechat.core.coreapi.common.preference.UserPreferenceStorage
+import com.example.simplechat.core.ui.error.UiErrorHandler
+import com.example.simplechat.core.preference.UserPreferenceStorage
 import com.example.simplechat.screens.chats.domain.models.Chat
 import com.example.simplechat.screens.chats.domain.usecase.CreatePrivateChatUseCase
 import com.example.simplechat.screens.chats.domain.usecase.DeleteChatUseCase
 import com.example.simplechat.screens.chats.domain.usecase.GetMyChatsUseCase
 import com.example.simplechat.services.updates.models.Update
-import com.example.simplechat.services.updates.models.UpdateNet
 import com.example.simplechat.services.updates.models.UpdateType
 import com.example.simplechat.services.updates.service.UpdatesService
 import com.github.terrakok.cicerone.Router

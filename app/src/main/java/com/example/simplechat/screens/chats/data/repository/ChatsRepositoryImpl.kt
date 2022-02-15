@@ -1,8 +1,7 @@
 package com.example.simplechat.screens.chats.data.repository
 
-import com.example.simplechat.core.coreimpl.network.apiservice.ApiService
+import com.example.simplechat.core.network.apiservice.ApiService
 import com.example.simplechat.screens.chats.data.mapper.ChatsMapper
-import com.example.simplechat.screens.chats.data.models.ChatNet
 import com.example.simplechat.screens.chats.data.models.NewPrivateChat
 import com.example.simplechat.screens.chats.domain.models.Chat
 import com.example.simplechat.screens.chats.domain.repository.ChatsRepository

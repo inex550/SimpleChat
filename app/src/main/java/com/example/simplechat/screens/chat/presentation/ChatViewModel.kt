@@ -3,14 +3,14 @@ package com.example.simplechat.screens.chat.presentation
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.simplechat.core.coreui.error.UiErrorHandler
-import com.example.simplechat.core.coreapi.common.preference.UserPreferenceStorage
+import com.example.simplechat.core.ui.error.UiErrorHandler
+import com.example.simplechat.core.preference.UserPreferenceStorage
 import com.example.simplechat.screens.chat.domain.models.Message
 import com.example.simplechat.screens.chat.domain.usecase.GetChatMessagesUseCase
 import com.example.simplechat.screens.chat.domain.usecase.SendMessageUseCase
 import com.example.simplechat.screens.chats.domain.models.Chat
 import com.example.simplechat.services.updates.models.Update
-import com.example.simplechat.services.updates.models.UpdateNet
+import com.example.simplechat.services.updates.models.UpdateType
 import com.example.simplechat.services.updates.service.UpdatesService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -48,8 +48,13 @@ class ChatViewModel @Inject constructor(
         }
 
         override fun onUpdate(update: Update): Boolean {
+            if (update.type == UpdateType.REMOVE && update.chat?.id == chat?.id) {
+                _currentChatDeleted.value = true
+                return true
+            }
+
             if (update.message == null) return false
-            if (update.message.chatId != chat.id) return false
+            if (update.message.chatId != chat?.id) return false
 
             _atEndMessage.value = update.message
 
@@ -62,11 +67,14 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private lateinit var chat: Chat
+    private var chat: Chat? = null
 
     fun setChat(chat: Chat) {
         this.chat = chat
     }
+
+    private val _currentChatDeleted = MutableStateFlow(false)
+    val currentChatDeleted: StateFlow<Boolean> = _currentChatDeleted
 
     private val _loading = MutableStateFlow(true)
     val loading: StateFlow<Boolean> = _loading

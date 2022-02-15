@@ -5,13 +5,16 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import com.example.simplechat.R
-import com.example.simplechat.core.coreui.base.BaseFragment
-import com.example.simplechat.core.coreui.dialog.ErrorDialog
-import com.example.simplechat.core.coreui.navigation.Screens
-import com.example.simplechat.core.coreui.extensions.launchWhenStarted
-import com.example.simplechat.core.coreui.extensions.makeVisible
+import com.example.simplechat.core.ui.base.BaseFragment
+import com.example.simplechat.core.ui.dialog.ErrorDialog
+import com.example.simplechat.core.ui.navigation.Screens
+import com.example.simplechat.core.ui.extensions.launchWhenStarted
+import com.example.simplechat.core.ui.extensions.makeVisible
 import com.example.simplechat.databinding.FragmentChatsBinding
+import com.example.simplechat.screens.chats.domain.models.Chat
+import com.example.simplechat.screens.searchuser.presentation.SearchUserBottomSheetDialogFragment
 import com.example.simplechat.services.updates.service.UpdatesService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
@@ -24,14 +27,30 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
 
     val viewModel: ChatsViewModel by viewModels()
 
-    private val chatsAdapter = ChatsAdapter(
-        onChatClickListener = { chat ->
-            viewModel.baseRouter.navigateTo(Screens.chatScreen(chat))
-        },
-        onDeleteChatClickListener = { chat ->
+    private val chatsAdapter = ChatsAdapter(object: ChatsAdapter.Listener {
+        override fun onChatsCountChanged(count: Int) {
+            binding.noChatsLl.makeVisible(count == 0)
+        }
+
+        override fun onChatDeleted(chat: Chat) {
             viewModel.deleteChat(chat)
         }
-    )
+
+        override fun onChatClicked(chat: Chat) {
+            viewModel.baseRouter.navigateTo(Screens.chatScreen(chat))
+        }
+    })
+
+    private val swipeToDeleteListener = object: SwipeToDeleteCallback.Listener {
+        override fun onItemDeleteSwiped(position: Int) {
+            val chat = chatsAdapter.getChat(position)
+            viewModel.deleteChat(chat)
+        }
+    }
+
+    private val onUserSelectedListener = SearchUserBottomSheetDialogFragment.OnUserSelectedListener { user ->
+        viewModel.addChat(user.username)
+    }
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, binder: IBinder) {
@@ -49,13 +68,12 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
 
         binding.chatsRv.adapter = chatsAdapter
 
-        chatsAdapter.setChatsCountChangedListener { count ->
-            binding.noChatsLl.makeVisible(count == 0)
-        }
+        val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(requireContext(), swipeToDeleteListener))
+        itemTouchHelper.attachToRecyclerView(binding.chatsRv)
 
         binding.addChatBtn.setOnClickListener {
-            AddChatDialog(viewModel::addChat)
-                .show(parentFragmentManager, null)
+            SearchUserBottomSheetDialogFragment.newInstance(onUserSelectedListener)
+                .show(requireActivity().supportFragmentManager, null)
         }
 
         binding.repeatBtn.setOnClickListener {
@@ -79,8 +97,6 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
 
             binding.chatsContentCl.makeVisible(true)
             chatsAdapter.setChats(chats)
-
-            binding.noChatsLl.makeVisible(chats.isEmpty())
         }.launchWhenStarted(lifecycleScope)
 
         viewModel.newChat.onEach { chat ->
@@ -91,7 +107,6 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
 
         viewModel.removeChat.onEach { chat ->
             chatsAdapter.removeChat(chat)
-            binding.noChatsLl.makeVisible(chatsAdapter.getChats().isEmpty())
         }.launchWhenStarted(lifecycleScope)
 
         viewModel.chatsError.onEach { error ->

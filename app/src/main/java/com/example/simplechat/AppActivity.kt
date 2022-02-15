@@ -2,13 +2,10 @@ package com.example.simplechat
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.simplechat.core.coreui.navigation.Screens
-import com.example.simplechat.core.coreapi.common.preference.UserPreferenceStorage
-import com.example.simplechat.core.coreui.extensions.makeVisible
-import com.example.simplechat.core.coreui.navigation.subnavigation.CiceroneHolder
-import com.example.simplechat.core.coreui.navigation.subnavigation.RouterProvider
+import com.example.simplechat.core.ui.navigation.Screens
+import com.example.simplechat.core.preference.UserPreferenceStorage
+import com.example.simplechat.core.ui.navigation.subnavigation.RouterProvider
 import com.example.simplechat.databinding.ActivityAppBinding
-import com.example.simplechat.screens.auth.presentation.LoginFragment
 import com.github.terrakok.cicerone.NavigatorHolder
 import com.github.terrakok.cicerone.Router
 import com.github.terrakok.cicerone.androidx.AppNavigator

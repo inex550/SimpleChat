@@ -2,11 +2,11 @@ package com.example.simplechat.screens.main
 
 import android.os.Bundle
 import com.example.simplechat.R
-import com.example.simplechat.core.coreui.base.BaseFragment
-import com.example.simplechat.core.coreui.extensions.withArgs
-import com.example.simplechat.core.coreui.navigation.Screens
-import com.example.simplechat.core.coreui.navigation.subnavigation.CiceroneHolder
-import com.example.simplechat.core.coreui.navigation.subnavigation.RouterProvider
+import com.example.simplechat.core.ui.base.BaseFragment
+import com.example.simplechat.core.ui.extensions.withArgs
+import com.example.simplechat.core.ui.navigation.Screens
+import com.example.simplechat.core.ui.navigation.subnavigation.CiceroneHolder
+import com.example.simplechat.core.ui.navigation.subnavigation.RouterProvider
 import com.github.terrakok.cicerone.Cicerone
 import com.github.terrakok.cicerone.Router
 import com.github.terrakok.cicerone.androidx.AppNavigator
